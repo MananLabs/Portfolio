@@ -83,12 +83,18 @@ function EmblemMesh({ zoom }: { zoom: number }) {
 
       {/* Outer web threads */}
       {webLines.map((line, i) => {
-        const geometry = new THREE.BufferGeometry().setFromPoints(line.points);
+        const positions = new Float32Array(
+          line.points.flatMap((p) => [p.x, p.y, p.z])
+        );
         return (
-          // @ts-expect-error - line is a valid r3f primitive
-          <line key={i} geometry={geometry}>
+          <line key={i}>
+            <bufferGeometry>
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
+            </bufferGeometry>
             <lineBasicMaterial color={line.color} transparent opacity={0.5} />
-          {/* @ts-expect-error */}
           </line>
         );
       })}
