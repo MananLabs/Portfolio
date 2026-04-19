@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Lazy load 3D scene for perf — avoids shipping three.js on first paint
-const SpiderEmblem3D = lazy(() => import("./SpiderEmblem3D"));
+const SpiderCinematicScene = lazy(() => import("./3d/Scene"));
 
 interface Props {
   /** 0..1 — how far the user has zoomed into the hero */
@@ -12,6 +13,7 @@ interface Props {
 export default function Hero({ zoom }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Mount 3D after first paint so the dark fade-in feels cinematic
@@ -56,12 +58,20 @@ export default function Hero({ zoom }: Props) {
               className="h-full w-full"
             >
               <Suspense fallback={null}>
-                <SpiderEmblem3D zoom={zoom} />
+                <SpiderCinematicScene zoom={zoom} isMobile={isMobile} />
               </Suspense>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Entry blackout fade for cinematic reveal */}
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 1.3, ease: "easeOut", delay: 0.1 }}
+        className="pointer-events-none absolute inset-0 z-20 bg-black"
+      />
 
       {/* Foreground vignette as zoom increases */}
       <div

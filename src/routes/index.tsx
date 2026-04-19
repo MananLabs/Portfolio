@@ -7,6 +7,7 @@ import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import WebBackground from "@/components/WebBackground";
+import IntroScreen from "@/components/IntroScreen";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   // zoom: 0 = hero only / idle, 1 = fully zoomed in
   const [zoom, setZoom] = useState(0);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
@@ -48,19 +50,23 @@ function Index() {
   const navVisible = zoom > 0.25;
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground">
-      <WebBackground />
-      <Navbar visible={navVisible} />
+    <>
+      {showIntro && <IntroScreen onComplete={() => setShowIntro(false)} />}
+      
+      <main className="relative min-h-screen bg-background text-foreground">
+        <WebBackground />
+        <Navbar visible={navVisible} />
 
-      <Hero zoom={zoom} />
+        <Hero zoom={zoom} />
 
-      {/* Smooth transitional spacer so zoom maps to scroll naturally */}
-      <div className="h-[20vh]" />
+        {/* Smooth transitional spacer so zoom maps to scroll naturally */}
+        <div className="h-[20vh]" />
 
-      <About />
-      <Projects />
-      <Skills />
-      <Contact />
-    </main>
+        <About />
+        <Projects />
+        <Skills />
+        <Contact />
+      </main>
+    </>
   );
 }
