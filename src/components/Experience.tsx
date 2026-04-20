@@ -108,6 +108,20 @@ const experiences: ExperienceItem[] = [
     tags: ["Hackathons", "Platforms", "Backend", "Leadership"],
   },
   {
+    id: "exp-aws-cloud-club",
+    title: "Tech Team Member",
+    company: "AWS Cloud Club, REVA University",
+    duration: "March 2025 – Present",
+    description:
+      "Contributing to cloud-based system design and development using AWS services. Working on scalable deployment workflows, backend infrastructure, and automation pipelines.",
+    highlights: ["Cloud architecture", "Distributed systems", "Technical workshops"],
+    side: "right",
+    top: 34,
+    accent: "blue",
+    metrics: ["Built cloud deployment workflow contributions", "Supported hands-on cloud learning initiatives"],
+    tags: ["AWS", "Cloud Infra", "Automation", "System Design"],
+  },
+  {
     id: "exp-devtrack",
     title: "Tech Head",
     company: "Dev Track Club, REVA University",
