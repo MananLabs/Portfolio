@@ -96,6 +96,27 @@ const interactiveCards = {
 
 type InteractiveCardKey = keyof typeof interactiveCards;
 
+const patchCardVariants = {
+  hidden: { opacity: 0, x: -80 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.06,
+    },
+  },
+};
+
+const patchCardChildVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: "easeInOut" },
+  },
+};
+
 export default function About() {
   const [activePopup, setActivePopup] = useState<InteractiveCardKey | null>(null);
   const [hoveredCard, setHoveredCard] = useState<InteractiveCardKey | null>(null);
@@ -122,7 +143,7 @@ export default function About() {
           <motion.article
             initial={{ opacity: 0, x: -70 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
+            viewport={{ once: false, margin: "-120px" }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="relative overflow-hidden border border-white/10 bg-[#0f1016]/95 p-5 md:p-7"
           >
@@ -134,7 +155,7 @@ export default function About() {
               <motion.div
                 initial={{ opacity: 0, x: -70 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.65, delay: 0.05, ease: "easeOut" }}
               >
                 <span className="inline-flex border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.35em] text-spider-red">
@@ -166,9 +187,10 @@ export default function About() {
                   return (
                     <motion.div
                       key={item.label}
-                      initial={{ opacity: 0, x: -80 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, amount: 0.3 }}
+                      variants={patchCardVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: false, amount: 0.3 }}
                       whileHover={
                         isInteractive
                           ? {
@@ -178,7 +200,7 @@ export default function About() {
                             }
                           : undefined
                       }
-                          transition={{ duration: 0.7, delay: 0.08 + index * 0.12, ease: "easeOut" }}
+                      transition={{ duration: 0.5, delay: 0.08 + index * 0.12, ease: "easeInOut" }}
                       onHoverStart={() => {
                         if (isInteractive && canHover) setHoveredCard(cardKey);
                       }}
@@ -200,13 +222,20 @@ export default function About() {
                       aria-label={isInteractive ? `Open ${item.label} details` : undefined}
                       className="relative overflow-hidden border border-white/10 bg-black/40 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-white/20"
                     >
-                      <item.icon
-                        className={`h-5 w-5 ${index % 2 === 0 ? "text-spider-red" : "text-spider-blue"}`}
-                      />
-                      <div className="mt-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
+                      <motion.div variants={patchCardChildVariants}>
+                        <item.icon
+                          className={`h-5 w-5 ${index % 2 === 0 ? "text-spider-red" : "text-spider-blue"}`}
+                        />
+                      </motion.div>
+                      <motion.div
+                        variants={patchCardChildVariants}
+                        className="mt-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55"
+                      >
                         {item.label}
-                      </div>
-                      <div className="mt-1 text-sm text-white/82">{item.value}</div>
+                      </motion.div>
+                      <motion.div variants={patchCardChildVariants} className="mt-1 text-sm text-white/82">
+                        {item.value}
+                      </motion.div>
 
                       <AnimatePresence>
                         {isInteractive && canHover && hoveredCard === cardKey && cardInfo && (
@@ -234,14 +263,14 @@ export default function About() {
               <motion.div
                 initial={{ opacity: 0, x: -70 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.65, delay: 0.12, ease: "easeOut" }}
                 className="space-y-4 text-sm leading-7 text-white/72 md:text-base"
               >
                 <motion.p
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: false, amount: 0.3 }}
                   transition={{ duration: 0.6, delay: 0.05, ease: "easeOut" }}
                 >
                   I am an AI/ML-focused software engineer with a strong inclination toward cybersecurity, dedicated to building intelligent, secure, and scalable systems at the intersection of machine learning, modern web technologies, and system security. My work centers on designing and engineering production-grade solutions, ranging from AI-powered applications and data-driven platforms to secure, resilient software architectures.
@@ -249,7 +278,7 @@ export default function About() {
                 <motion.p
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: false, amount: 0.3 }}
                   transition={{ duration: 0.6, delay: 0.12, ease: "easeOut" }}
                 >
                   I specialize in transforming complex, abstract ideas into structured, real-world systems by combining strong product thinking with deep technical execution. Whether it&apos;s developing intelligent models, architecting secure backend systems, or building seamless full-stack experiences, I focus on creating solutions that are not only efficient and scalable, but also robust and trustworthy.
@@ -257,7 +286,7 @@ export default function About() {
                 <motion.p
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: false, amount: 0.3 }}
                   transition={{ duration: 0.6, delay: 0.18, ease: "easeOut" }}
                 >
                   Through continuous experimentation, hackathons, and hands-on projects, I actively explore domains such as AI-driven automation, cybersecurity practices, system design, and scalable web infrastructure. My approach emphasizes clarity in design, rapid iteration, and building systems that deliver measurable, real-world impact.
@@ -267,7 +296,7 @@ export default function About() {
               <motion.div
                 initial={{ opacity: 0, x: -70 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.65, delay: 0.16, ease: "easeOut" }}
                 className="border border-spider-red/30 bg-[#090a0f] p-5"
               >
@@ -286,14 +315,14 @@ export default function About() {
           <motion.aside
             initial={{ opacity: 0, x: 70 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
+            viewport={{ once: false, margin: "-120px" }}
             transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
             className="border border-white/10 bg-[#0c0d12]/95 p-5 md:p-7"
           >
             <motion.div
               initial={{ opacity: 0, x: 70 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
+              viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: 0.65, delay: 0.05, ease: "easeOut" }}
               className="mb-6 flex items-center justify-between gap-4"
             >
@@ -314,7 +343,7 @@ export default function About() {
                   key={section.title}
                   initial={{ opacity: 0, x: 80 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-80px" }}
+                  viewport={{ once: false, margin: "-80px" }}
                   transition={{ duration: 0.55, delay: 0.04 * sectionIndex, ease: "easeOut" }}
                   className={`border border-white/10 bg-black/55 ${section.accent === "red" ? "hover:border-spider-red/35" : "hover:border-spider-blue/35"}`}
                 >
@@ -350,7 +379,7 @@ export default function About() {
                               key={skill.name}
                               initial={{ opacity: 0, x: 50 }}
                               whileInView={{ opacity: 1, x: 0 }}
-                              viewport={{ once: true, margin: "-80px" }}
+                              viewport={{ once: false, margin: "-80px" }}
                               transition={{ duration: 0.4, delay: 0.03 * skillIndex, ease: "easeOut" }}
                               className={`group border border-white/10 bg-black/60 p-4 transition duration-300 hover:-translate-y-1 hover:scale-[1.03] ${accentClass}`}
                             >
@@ -372,7 +401,7 @@ export default function About() {
                                 <motion.div
                                   initial={{ width: 0 }}
                                   whileInView={{ width: `${skill.level}%` }}
-                                  viewport={{ once: true }}
+                                  viewport={{ once: false }}
                                   transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                                   className={`h-full ${skill.accent === "red" ? "bg-spider-red" : "bg-spider-blue"}`}
                                 />
@@ -398,7 +427,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="border border-white/10 bg-black/55 px-4 py-3 text-xs font-semibold uppercase tracking-[0.32em] text-spider-red"
           >
@@ -407,7 +436,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: 60 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6, delay: 0.08, ease: "easeOut" }}
             className="border border-white/10 bg-black/55 px-4 py-3 text-xs font-semibold uppercase tracking-[0.32em] text-spider-blue md:text-right"
           >
