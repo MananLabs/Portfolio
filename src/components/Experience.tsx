@@ -8,8 +8,6 @@ type ExperienceItem = {
   duration: string;
   description: string;
   highlights: string[];
-  side: "left" | "right";
-  top: number;
   accent: "red" | "blue" | "purple";
   metrics: string[];
   tags: string[];
@@ -87,8 +85,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Led product strategy and technical execution from inception. Drove customer engagement, implemented revenue-focused strategies, and managed systems for scalability and profitability.",
     highlights: ["Product strategy", "Revenue optimization", "System scalability"],
-    side: "left",
-    top: 90,
     accent: "purple",
     metrics: ["Built 3 core operating workflows", "Managed product, revenue, and inventory systems"],
     tags: ["Founder Ops", "Strategy", "Revenue", "Inventory"],
@@ -101,8 +97,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Led end-to-end execution of national-level hackathons. Architected official platforms, managed backend workflows, and coordinated technical teams at scale.",
     highlights: ["Hackathon platforms", "Backend workflows", "Team coordination"],
-    side: "left",
-    top: 26,
     accent: "blue",
     metrics: ["Led 2 major hackathon operations", "Coordinated multi-team event delivery"],
     tags: ["Hackathons", "Platforms", "Backend", "Leadership"],
@@ -115,8 +109,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Contributing to cloud-based system design and development using AWS services. Working on scalable deployment workflows, backend infrastructure, and automation pipelines.",
     highlights: ["Cloud architecture", "Distributed systems", "Technical workshops"],
-    side: "right",
-    top: 34,
     accent: "blue",
     metrics: ["Built cloud deployment workflow contributions", "Supported hands-on cloud learning initiatives"],
     tags: ["AWS", "Cloud Infra", "Automation", "System Design"],
@@ -129,8 +121,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Leading technical initiatives and event execution. Overseeing development workflows, system infrastructure, and driving collaboration across developer teams.",
     highlights: ["Event infrastructure", "System design", "Team collaboration"],
-    side: "right",
-    top: 42,
     accent: "red",
     metrics: ["Streamlined club workflow execution", "Kept technical systems aligned across teams"],
     tags: ["Workflows", "Infra", "Collaboration", "Systems"],
@@ -143,8 +133,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Managing technical operations and development initiatives. Leading system design, event tech execution, and building scalable workflows for student-led events.",
     highlights: ["Tech operations", "System architecture", "Event execution"],
-    side: "left",
-    top: 58,
     accent: "blue",
     metrics: ["Standardized event-tech delivery", "Improved execution flow across student projects"],
     tags: ["Systems", "Event Tech", "Ops", "Architecture"],
@@ -157,8 +145,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Led redevelopment of a production-ready community platform using Next.js, FastAPI, and Supabase. Implemented secure JWT-based authentication and optimized database architecture.",
     highlights: ["Next.js + FastAPI", "JWT authentication", "Database optimization"],
-    side: "right",
-    top: 74,
     accent: "red",
     metrics: ["Shipped a full platform rebuild", "Implemented role-based auth and scalable data layers"],
     tags: ["Next.js", "FastAPI", "Supabase", "JWT"],
@@ -171,8 +157,6 @@ const experiences: ExperienceItem[] = [
     description:
       "Developed and deployed AI-driven automation tools for finance workflows. Built scalable backend systems, APIs, and data processing pipelines with secure financial data handling.",
     highlights: ["Finance automation", "Scalable APIs", "Secure data systems"],
-    side: "right",
-    top: 10,
     accent: "red",
     metrics: ["Automated finance workflows end to end", "Built reliable backend pipelines for sensitive data"],
     tags: ["Automation", "Finance APIs", "AI Bots", "Security"],
@@ -181,10 +165,12 @@ const experiences: ExperienceItem[] = [
 
 type TimelineNodeProps = {
   item: ExperienceItem;
+  index: number;
+  topPx: number;
 };
 
-function TimelineNode({ item }: TimelineNodeProps) {
-  const isRight = item.side === "right";
+function TimelineNode({ item, index, topPx }: TimelineNodeProps) {
+  const isRight = index % 2 === 1;
   const theme = getAccentTheme(item.accent);
   const lineDirection = isRight ? "bg-gradient-to-r" : "bg-gradient-to-l";
 
@@ -195,7 +181,7 @@ function TimelineNode({ item }: TimelineNodeProps) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: false, amount: 0.2 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      style={{ top: `${item.top}%` }}
+      style={{ top: `${topPx}px` }}
     >
       <motion.div
         aria-hidden="true"
@@ -338,6 +324,9 @@ function TimelineNode({ item }: TimelineNodeProps) {
 
 export default function Experience() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const nodeSpacing = 240;
+  const nodeTopOffset = 120;
+  const timelineHeight = nodeTopOffset * 2 + (experiences.length - 1) * nodeSpacing;
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start 90%", "end 10%"],
@@ -373,7 +362,7 @@ export default function Experience() {
           </p>
         </motion.div>
 
-        <div className="relative hidden min-h-[260vh] md:block">
+        <div className="relative hidden md:block" style={{ minHeight: `${timelineHeight}px` }}>
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {[
               { left: "20%", top: "16%", size: 2, delay: 0, duration: 8 },
@@ -477,10 +466,12 @@ export default function Experience() {
           </motion.svg>
 
           <motion.div className="absolute inset-0">
-            {experiences.map((item) => (
+            {experiences.map((item, index) => (
               <TimelineNode
                 key={item.id}
                 item={item}
+                index={index}
+                topPx={nodeTopOffset + index * nodeSpacing}
               />
             ))}
           </motion.div>
