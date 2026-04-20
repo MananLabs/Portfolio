@@ -21,38 +21,60 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
     };
   }, [entered]);
 
+  // Block scroll propagation to underlying 3D scene
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!entered) {
+      setEntered(true);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!entered) {
+      setEntered(true);
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent) => {
+    e.stopPropagation();
+    if (!entered) {
+      setEntered(true);
+    }
+  };
+
+  // Global event listeners for wheel events (non-passive to allow preventDefault)
   useEffect(() => {
-    const handleScroll = () => {
+    const globalHandleWheel = (e: WheelEvent) => {
       if (!entered) {
+        e.preventDefault();
+        e.stopPropagation();
         setEntered(true);
       }
     };
 
-    const handleWheel = (e: WheelEvent) => {
+    const globalHandleTouchStart = (e: TouchEvent) => {
       if (!entered) {
+        e.preventDefault();
+        e.stopPropagation();
         setEntered(true);
       }
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
-      if (!entered) {
-        setEntered(true);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    // Use non-passive listeners so preventDefault works
+    window.addEventListener("wheel", globalHandleWheel, { passive: false });
+    window.addEventListener("touchstart", globalHandleTouchStart, { passive: false });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("wheel", globalHandleWheel);
+      window.removeEventListener("touchstart", globalHandleTouchStart);
     };
   }, [entered]);
 
+  // Trigger completion animation after zoom finishes (~1.5s)
   useEffect(() => {
-    // Trigger completion animation after zoom finishes (~1.5s)
     if (entered) {
       const timer = setTimeout(() => {
         onComplete();
@@ -70,23 +92,28 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className="fixed inset-0 z-50 overflow-hidden bg-black"
+          style={{ pointerEvents: "auto" }}
+          onWheel={handleWheel}
+          onTouchMove={handleTouchMove}
+          onScroll={handleScroll}
         >
           {/* Fullscreen image */}
           <motion.img
             src="/images/spiderman-intro.jpg"
             alt="Spider-Man Intro"
-            className="h-full w-full object-cover"
+            className="pointer-events-none h-full w-full object-cover"
+            draggable={false}
           />
 
           {/* Optional: Subtle dark overlay for cinematic feel */}
-          <div className="absolute inset-0 bg-black/10" />
+          <div className="pointer-events-none absolute inset-0 bg-black/10" />
 
           {/* Scroll hint text */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center text-[10px] tracking-[0.3em] text-white/60"
+            className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 text-center text-[10px] tracking-[0.3em] text-white/60"
           >
             SCROLL TO ENTER
           </motion.div>
@@ -98,6 +125,7 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
           animate={{ opacity: 0, scale: 7 }}
           transition={{ duration: 1.4, ease: "easeInOut" }}
           className="fixed inset-0 z-50 overflow-hidden bg-black"
+          style={{ pointerEvents: "none" }}
           onAnimationComplete={() => {
             // Animation complete callback is handled by useEffect timer
           }}
@@ -106,6 +134,7 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
             src="/images/spiderman-intro.jpg"
             alt="Spider-Man Intro"
             className="h-full w-full object-cover"
+            draggable={false}
           />
         </motion.div>
       )}

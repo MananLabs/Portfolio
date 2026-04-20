@@ -8,12 +8,12 @@ interface CameraControllerProps {
 
 export default function CameraController({ progress, isMobile = false }: CameraControllerProps) {
   const { camera, pointer } = useThree();
+  void progress;
 
-  useFrame((_, delta) => {
-    const t = THREE.MathUtils.clamp(progress, 0, 1);
+  useFrame((state, delta) => {
     const targetX = isMobile ? 0 : pointer.x * 0.15;
-    const targetY = THREE.MathUtils.lerp(0, 0.5, t) + (isMobile ? 0 : pointer.y * 0.08);
-    const targetZ = THREE.MathUtils.lerp(6, 2, t);
+    const targetY = 0.2 + Math.sin(state.clock.elapsedTime * 0.4) * 0.04 + (isMobile ? 0 : pointer.y * 0.08);
+    const targetZ = 6;
 
     const damping = 1 - Math.exp(-delta * 3.8);
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, damping);

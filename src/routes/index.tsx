@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -30,24 +30,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  // zoom: 0 = hero only / idle, 1 = fully zoomed in
-  const [zoom, setZoom] = useState(0);
+  const [heroProgress, setHeroProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(true);
 
-  useEffect(() => {
-    const onScroll = () => {
-      // Map first viewport-height of scroll to zoom 0→1
-      const vh = window.innerHeight;
-      const z = Math.min(1, Math.max(0, window.scrollY / (vh * 0.8)));
-      setZoom(z);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   // Navbar appears once user starts zooming in
-  const navVisible = zoom > 0.25;
+  const navVisible = heroProgress > 0.25;
 
   return (
     <>
@@ -57,10 +44,7 @@ function Index() {
         <WebBackground />
         <Navbar visible={navVisible} />
 
-        <Hero zoom={zoom} />
-
-        {/* Smooth transitional spacer so zoom maps to scroll naturally */}
-        <div className="h-[20vh]" />
+        <Hero onProgress={setHeroProgress} />
 
         <About />
         <Projects />
